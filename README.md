@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kavana Health
+
+Premium health optimization and biomarker tracking platform built with Next.js.
+
+## Features
+
+- 🔐 **Authentication** - Firebase Auth with Email/Password and Google Sign-in
+- 📊 **Biomarker Tracking** - Upload PDF blood tests, extract data with AI (GPT-4 Vision)
+- 📈 **Data Visualization** - Trend graphs and visual scales for biomarker analysis
+- 🤖 **AI Health Consultant** - GPT-4o powered chat assistant for health insights
+- 💬 **Conversation History** - Persistent chat history with auto-naming and management
+- 📱 **Wearables Integration** - Support for Oura Ring and Garmin (coming soon)
+- 🛒 **Shop** - Supplement packs and health hardware
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + Shadcn/UI
+- **Database:** Firebase Firestore
+- **Authentication:** Firebase Auth
+- **AI:** OpenAI GPT-4o & GPT-4 Vision
+- **Charts:** Recharts
+- **Icons:** Lucide React
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ installed
+- Firebase project set up
+- OpenAI API key
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/YOUR_USERNAME/kavana-health.git
+cd kavana-health
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.local.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env.local` and add your Firebase and OpenAI credentials:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+OPENAI_API_KEY=your-openai-key
+```
 
-## Learn More
+4. Run the development server:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setup Guides
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Firebase Setup Guide](./FIREBASE_SETUP.md)
+- [Git Repository Setup](./GIT_SETUP.md)
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+kavana/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes (backend)
+│   ├── (auth)/           # Authentication pages
+│   └── (dashboard)/      # Protected dashboard pages
+├── components/            # React components
+│   ├── ai-consultant/    # Chat interface components
+│   ├── data-vault/       # Biomarker & wearable components
+│   ├── dashboard/         # Dashboard components
+│   └── ui/               # Shadcn/UI components
+├── lib/                   # Utility libraries
+│   ├── firebase/         # Firebase services
+│   └── openai/           # OpenAI integration
+├── types/                 # TypeScript type definitions
+└── hooks/                 # Custom React hooks
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Key Features
+
+### PDF Blood Test Upload
+- Upload PDF lab reports
+- AI-powered extraction using GPT-4 Vision
+- Automatic biomarker parsing and categorization
+- Trend visualization over time
+
+### AI Health Consultant
+- GPT-4o powered health specialist
+- Context-aware responses using user's biomarker data
+- Conversation history with auto-naming
+- Persistent chat sessions
+
+### Data Vault
+- View all biomarker tests
+- Compare tests over time
+- Visual scales showing optimal/sub-optimal/danger zones
+- Statistical trend graphs
+
+## Environment Variables
+
+See `.env.local.example` for all required environment variables.
+
+**Important:** Never commit `.env.local` to version control!
+
+## Deployment
+
+The easiest way to deploy is using [Vercel](https://vercel.com):
+
+1. Push your code to GitHub
+2. Import your repository in Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
+
+See [Vercel documentation](https://vercel.com/docs) for more details.
+
+## License
+
+Private - All rights reserved
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
