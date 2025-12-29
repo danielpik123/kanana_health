@@ -56,7 +56,24 @@ export function TestSelector({ tests, selectedTest, onTestSelect, loading = fals
   };
 
   const formatDate = (date: Date | any): string => {
-    const d = date instanceof Date ? date : date?.toDate?.() || new Date(date);
+    // Convert to Date, handling both Date and Firestore Timestamp
+    let d: Date;
+    if (date instanceof Date) {
+      d = date;
+    } else if (date && typeof date.toDate === "function") {
+      // Firestore Timestamp
+      d = date.toDate();
+    } else if (date) {
+      // Fallback: if it's a number or string, create Date from it
+      const dateValue = date as any;
+      if (typeof dateValue === "number" || typeof dateValue === "string") {
+        d = new Date(dateValue);
+      } else {
+        d = new Date();
+      }
+    } else {
+      d = new Date();
+    }
     return d.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -98,9 +115,24 @@ export function TestSelector({ tests, selectedTest, onTestSelect, loading = fals
           </SelectTrigger>
           <SelectContent className="glass-card">
             {tests.map((test, index) => {
-              const testDate = test.testDate instanceof Date
-                ? test.testDate
-                : (test.testDate as any).toDate?.() || new Date(test.testDate);
+              // Convert testDate to Date, handling both Date and Firestore Timestamp
+              let testDate: Date;
+              if (test.testDate instanceof Date) {
+                testDate = test.testDate;
+              } else if (test.testDate && typeof (test.testDate as any).toDate === "function") {
+                // Firestore Timestamp - convert to Date
+                testDate = (test.testDate as any).toDate();
+              } else if (test.testDate) {
+                // Fallback: if it's a number or string, create Date from it
+                const dateValue = test.testDate as any;
+                if (typeof dateValue === "number" || typeof dateValue === "string") {
+                  testDate = new Date(dateValue);
+                } else {
+                  testDate = new Date();
+                }
+              } else {
+                testDate = new Date();
+              }
               const dateKey = getDateKey(test.testDate);
               const isLatest = index === 0;
               const isSelected = selectedTest?.id === test.id;
