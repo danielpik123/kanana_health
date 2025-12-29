@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import webpack from "webpack";
 
 const nextConfig: NextConfig = {
   // Increase API route timeout for PDF processing
@@ -9,7 +8,7 @@ const nextConfig: NextConfig = {
     },
   },
   // Use webpack configuration to handle server-only packages
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     if (isServer) {
       // Externalize canvas and pdfjs-dist for server builds
       // These packages are only needed client-side
