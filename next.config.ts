@@ -7,12 +7,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-  // Use webpack instead of Turbopack to avoid pdfjs-dist build issues
-  // Turbopack has issues with pdfjs-dist's canvas dependency
+  // Use webpack configuration to handle pdfjs-dist
+  // pdfjs-dist is only used client-side via dynamic import
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalize canvas and pdfjs-dist for server builds
-      // These are only used client-side via dynamic import
+      // These packages are only needed client-side
       config.externals = config.externals || [];
       if (Array.isArray(config.externals)) {
         config.externals.push("canvas", "pdfjs-dist");
