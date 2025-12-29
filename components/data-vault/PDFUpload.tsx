@@ -6,13 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, FileText, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import * as pdfjsLib from "pdfjs-dist";
-
-// Configure PDF.js for browser use
-if (typeof window !== "undefined") {
-  // Use CDN worker for now - can be replaced with local worker if needed
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-}
 
 // Simple toast display component
 function ToastDisplay({ toasts }: { toasts: Array<{ id: string; title: string; description?: string; variant?: string }> }) {
@@ -41,8 +34,17 @@ function ToastDisplay({ toasts }: { toasts: Array<{ id: string; title: string; d
 
 /**
  * Convert PDF file to base64 images using PDF.js in the browser
+ * Uses dynamic import to ensure pdfjs-dist is only loaded client-side
  */
 async function pdfToImages(file: File): Promise<string[]> {
+  // Dynamically import pdfjs-dist only in the browser
+  const pdfjsLib = await import("pdfjs-dist");
+  
+  // Configure PDF.js worker for browser use
+  if (typeof window !== "undefined") {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  }
+
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   const images: string[] = [];
