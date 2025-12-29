@@ -31,10 +31,26 @@ export function BiomarkerTrends({ tests }: BiomarkerTrendsProps) {
     >();
 
     tests.forEach((test) => {
-      const testDate =
-        test.testDate instanceof Date
-          ? test.testDate
-          : (test.testDate as any).toDate?.() || new Date(test.testDate);
+      // Convert testDate to Date, handling both Date and Firestore Timestamp
+      let testDate: Date;
+      if (test.testDate instanceof Date) {
+        testDate = test.testDate;
+      } else if (test.testDate && typeof (test.testDate as any).toDate === "function") {
+        // Firestore Timestamp - convert to Date
+        testDate = (test.testDate as any).toDate();
+      } else if (test.testDate) {
+        // Fallback: if it's a number or string, create Date from it
+        const dateValue = test.testDate as any;
+        if (typeof dateValue === "number" || typeof dateValue === "string") {
+          testDate = new Date(dateValue);
+        } else {
+          // Last resort: use current date
+          testDate = new Date();
+        }
+      } else {
+        // No date available, use current date
+        testDate = new Date();
+      }
 
       test.biomarkers.forEach((biomarker) => {
         const key = `${biomarker.name}_${biomarker.unit}`;
