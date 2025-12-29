@@ -20,7 +20,8 @@ async function getAdminDb() {
   }
   try {
     const adminModule = await import("./admin");
-    return adminModule.adminDb;
+    // Use the async getter instead of direct access
+    return await adminModule.getAdminDb();
   } catch (error) {
     return null; // Admin SDK not available, will use client SDK
   }

@@ -7,8 +7,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-  // Use webpack configuration to handle pdfjs-dist
-  // pdfjs-dist is only used client-side via dynamic import
+  // Use webpack configuration to handle server-only packages
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalize canvas and pdfjs-dist for server builds
@@ -21,6 +20,17 @@ const nextConfig: NextConfig = {
           config.externals,
           "canvas",
           "pdfjs-dist",
+        ];
+      }
+    } else {
+      // For client builds, externalize firebase-admin (server-only package)
+      config.externals = config.externals || [];
+      if (Array.isArray(config.externals)) {
+        config.externals.push("firebase-admin");
+      } else {
+        config.externals = [
+          config.externals,
+          "firebase-admin",
         ];
       }
     }
