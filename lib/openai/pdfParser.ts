@@ -213,20 +213,23 @@ Extract ALL biomarkers you can find in the report.`;
     }
 
     // Process biomarkers
+    // Filter and type-narrow to ensure all required fields are present
     const biomarkers: Omit<Biomarker, "id" | "testDate" | "status">[] =
       parsed.biomarkers
-        .filter((bio) => bio.name && bio.unit && typeof bio.value === "number") // Filter out invalid entries
+        .filter((bio): bio is typeof bio & { name: string; value: number; unit: string } => {
+          return !!(bio.name && bio.unit && typeof bio.value === "number");
+        })
         .map((bio) => {
           const optimalRange =
             bio.optimalRange ||
-            getDefaultOptimalRange(bio.name || "", bio.unit || "");
+            getDefaultOptimalRange(bio.name, bio.unit);
 
           return {
-            name: (bio.name || "").trim(),
-            value: bio.value,
-            unit: (bio.unit || "").trim(),
+            name: bio.name.trim(),
+            value: bio.value, // Now TypeScript knows this is definitely a number
+            unit: bio.unit.trim(),
             optimalRange,
-            category: determineCategory(bio.name || ""),
+            category: determineCategory(bio.name),
           };
         });
 
