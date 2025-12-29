@@ -19,6 +19,8 @@ async function getAdminDb() {
     return null; // Never use admin SDK on client
   }
   try {
+    // Dynamic import - webpack will ignore this due to IgnorePlugin in next.config.ts
+    // The IgnorePlugin ensures firebase-admin is never bundled for client builds
     const adminModule = await import("./admin");
     // Use the async getter instead of direct access
     return await adminModule.getAdminDb();

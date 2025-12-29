@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import webpack from "webpack";
 
 const nextConfig: NextConfig = {
   // Increase API route timeout for PDF processing
@@ -23,14 +24,43 @@ const nextConfig: NextConfig = {
         ];
       }
     } else {
-      // For client builds, externalize firebase-admin (server-only package)
+      // For client builds, completely ignore firebase-admin and related packages
+      // These are server-only and should never be bundled for client
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^firebase-admin$/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^firebase-admin\/.*/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^@google-cloud\/.*/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^google-auth-library$/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^google-auth-library\/.*/,
+        })
+      );
+
+      // Also externalize as fallback
       config.externals = config.externals || [];
       if (Array.isArray(config.externals)) {
-        config.externals.push("firebase-admin");
+        config.externals.push(
+          "firebase-admin",
+          /^firebase-admin\/.*/,
+          /^@google-cloud\/.*/,
+          /^google-auth-library\/.*/
+        );
       } else {
         config.externals = [
           config.externals,
           "firebase-admin",
+          /^firebase-admin\/.*/,
+          /^@google-cloud\/.*/,
+          /^google-auth-library\/.*/,
         ];
       }
     }
