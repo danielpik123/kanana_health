@@ -37,13 +37,16 @@ function ToastDisplay({ toasts }: { toasts: Array<{ id: string; title: string; d
  * Uses dynamic import to ensure pdfjs-dist is only loaded client-side
  */
 async function pdfToImages(file: File): Promise<string[]> {
+  // Ensure we're in the browser
+  if (typeof window === "undefined") {
+    throw new Error("PDF processing is only available in the browser");
+  }
+
   // Dynamically import pdfjs-dist only in the browser
   const pdfjsLib = await import("pdfjs-dist");
   
   // Configure PDF.js worker for browser use
-  if (typeof window !== "undefined") {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;

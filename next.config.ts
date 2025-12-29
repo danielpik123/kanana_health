@@ -7,16 +7,22 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-  // Externalize canvas and pdfjs-dist for server builds
-  // These are only used client-side, so we don't need them in server bundle
+  // Use webpack instead of Turbopack to avoid pdfjs-dist build issues
+  // Turbopack has issues with pdfjs-dist's canvas dependency
   webpack: (config, { isServer }) => {
     if (isServer) {
-      // Externalize canvas and pdfjs-dist for server-side builds
+      // Externalize canvas and pdfjs-dist for server builds
+      // These are only used client-side via dynamic import
       config.externals = config.externals || [];
-      config.externals.push({
-        canvas: "commonjs canvas",
-        "pdfjs-dist": "commonjs pdfjs-dist",
-      });
+      if (Array.isArray(config.externals)) {
+        config.externals.push("canvas", "pdfjs-dist");
+      } else {
+        config.externals = [
+          config.externals,
+          "canvas",
+          "pdfjs-dist",
+        ];
+      }
     }
     return config;
   },
