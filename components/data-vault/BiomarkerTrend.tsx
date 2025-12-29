@@ -87,7 +87,12 @@ export function BiomarkerTrend({
               borderRadius: "8px",
             }}
             labelFormatter={(value) => `Date: ${value}`}
-            formatter={(value: number) => [`${value} ${unit}`, "Value"]}
+            formatter={(value: number | undefined) => {
+              if (value === undefined || value === null) {
+                return ["N/A", "Value"];
+              }
+              return [`${value} ${unit}`, "Value"];
+            }}
           />
           {/* Optimal range area */}
           <ReferenceArea
