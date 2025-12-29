@@ -121,9 +121,24 @@ export async function saveTest(
   if (adminDbInstance) {
     await ensureUserDocument(userId);
 
-    const testDateValue = testData.testDate instanceof Date
-      ? testData.testDate
-      : (testData.testDate as any).toDate?.() || new Date(testData.testDate);
+    // Convert testDate to Date, handling both Date and Firestore Timestamp
+    let testDateValue: Date;
+    if (testData.testDate instanceof Date) {
+      testDateValue = testData.testDate;
+    } else if (testData.testDate && typeof (testData.testDate as any).toDate === "function") {
+      // Firestore Timestamp - convert to Date
+      testDateValue = (testData.testDate as any).toDate();
+    } else if (testData.testDate) {
+      // Fallback: if it's a number or string, create Date from it
+      const dateValue = testData.testDate as any;
+      if (typeof dateValue === "number" || typeof dateValue === "string") {
+        testDateValue = new Date(dateValue);
+      } else {
+        testDateValue = new Date();
+      }
+    } else {
+      testDateValue = new Date();
+    }
     const normalizedDate = normalizeDate(testDateValue);
 
     // Check if test exists for this date using Admin SDK
@@ -159,7 +174,11 @@ export async function saveTest(
       uploadedAt: adminDbInstance.Timestamp.fromDate(
         testData.uploadedAt instanceof Date
           ? testData.uploadedAt
-          : new Date(testData.uploadedAt)
+          : (testData.uploadedAt && typeof (testData.uploadedAt as any).toDate === "function")
+          ? (testData.uploadedAt as any).toDate()
+          : typeof testData.uploadedAt === "number" || typeof testData.uploadedAt === "string"
+          ? new Date(testData.uploadedAt)
+          : new Date()
       ),
       biomarkers: finalBiomarkers,
       source: testData.source,
@@ -193,9 +212,24 @@ export async function saveTest(
   // Ensure user document exists before creating subcollection
   await ensureUserDocument(userId);
 
-  const testDateValue = testData.testDate instanceof Date
-    ? testData.testDate
-    : (testData.testDate as any).toDate?.() || new Date(testData.testDate);
+  // Convert testDate to Date, handling both Date and Firestore Timestamp
+  let testDateValue: Date;
+  if (testData.testDate instanceof Date) {
+    testDateValue = testData.testDate;
+  } else if (testData.testDate && typeof (testData.testDate as any).toDate === "function") {
+    // Firestore Timestamp - convert to Date
+    testDateValue = (testData.testDate as any).toDate();
+  } else if (testData.testDate) {
+    // Fallback: if it's a number or string, create Date from it
+    const dateValue = testData.testDate as any;
+    if (typeof dateValue === "number" || typeof dateValue === "string") {
+      testDateValue = new Date(dateValue);
+    } else {
+      testDateValue = new Date();
+    }
+  } else {
+    testDateValue = new Date();
+  }
   const normalizedDate = normalizeDate(testDateValue);
 
   // Check if test exists for this date
@@ -233,7 +267,11 @@ export async function saveTest(
     uploadedAt: Timestamp.fromDate(
       testData.uploadedAt instanceof Date
         ? testData.uploadedAt
-        : (testData.uploadedAt as any).toDate?.() || new Date(testData.uploadedAt)
+        : (testData.uploadedAt && typeof (testData.uploadedAt as any).toDate === "function")
+        ? (testData.uploadedAt as any).toDate()
+        : typeof testData.uploadedAt === "number" || typeof testData.uploadedAt === "string"
+        ? new Date(testData.uploadedAt)
+        : new Date()
     ),
     biomarkers: finalBiomarkers,
     source: testData.source,
